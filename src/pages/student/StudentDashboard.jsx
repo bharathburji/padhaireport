@@ -3,8 +3,8 @@ import { useAuth } from "../../context/AuthContext.jsx";
 import { getItem } from "../../utils/storage.js";
 import { SUBJECTS, EXAMS, getStatusFromPercent } from "../../utils/data.js";
 import {
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   Tooltip,
@@ -16,20 +16,28 @@ import "../../App.css";
 const MARKS_KEY = "padhaai_marks";
 const STUDENTS_KEY = "padhaai_students";
 
+// 4 colors for 4 subjects (matches dark UI nicely)
+const SUBJECT_COLORS = ["#22c55e", "#60a5fa", "#f97316", "#a855f7"];
+
 function StudentDashboard() {
   const { user } = useAuth();
   const [student, setStudent] = useState(null);
   const [records, setRecords] = useState([]);
 
   useEffect(() => {
+    // IMPORTANT: when user is null (after logout), don't touch user.email
+    if (!user) {
+      setStudent(null);
+      setRecords([]);
+      return;
+    }
+
     const allStudents = getItem(STUDENTS_KEY, []);
     const mine = allStudents.find((s) => s.email === user.email);
     setStudent(mine || null);
 
     const allMarks = getItem(MARKS_KEY, []);
-    const myMarks = mine
-      ? allMarks.filter((r) => r.studentId === mine.id)
-      : [];
+    const myMarks = mine ? allMarks.filter((r) => r.studentId === mine.id) : [];
     setRecords(myMarks);
   }, [user]);
 
@@ -39,7 +47,6 @@ function StudentDashboard() {
         status: "Not evaluated",
         strength: { subject: "-" },
         weakness: { subject: "-" },
-        subjectAverages: SUBJECTS.map((s) => ({ subject: s, average: 0 })),
       };
     }
 
@@ -84,26 +91,33 @@ function StudentDashboard() {
       status,
       strength,
       weakness,
-      subjectAverages,
     };
   }, [student, records]);
 
-  const lineData = useMemo(() => {
+  // Exam-wise subject marks for bar chart (4 colors = 4 subjects)
+  const examChartData = useMemo(() => {
     return EXAMS.map((exam) => {
       const rec = records.find((r) => r.exam === exam);
       const item = { exam };
+
       SUBJECTS.forEach((sub) => {
-        item[sub] = rec ? rec.marks[sub] : null;
+        item[sub] =
+          rec && typeof rec.marks[sub] === "number" ? rec.marks[sub] : 0;
       });
+
       return item;
     });
   }, [records]);
 
+  const displayName =
+    student?.name || user?.email?.split("@")[0] || "Student";
+
+  // If user is null while router is redirecting, don't render anything
+  if (!user) return null;
+
   return (
     <div className="page">
-      <h2 className="page-title">
-        Welcome, {student?.name || user.email.split("@")[0] || "Student"}
-      </h2>
+      <h2 className="page-title">Welcome, {displayName}</h2>
       <p className="page-subtitle">
         Here&apos;s your academic performance summary and progress insights.
       </p>
@@ -111,8 +125,8 @@ function StudentDashboard() {
       {!student && (
         <div className="card" style={{ marginBottom: "1.2rem" }}>
           <p className="card-subtitle">
-            Your teacher has not linked your account to a student record yet.
-            Once they add you in &quot;Manage Students&quot; and enter your
+            Your account is not yet linked to a student record. Once your
+            teacher adds you in &quot;Manage Students&quot; and enters your
             marks, your full analytics will appear here.
           </p>
         </div>
@@ -128,7 +142,7 @@ function StudentDashboard() {
             <p className="stat-value">
               {student?.overallPercent == null
                 ? "-"
-                : `${student.overallPercent}%`}
+                : `${student.overallPercent} / 100`}
             </p>
           </div>
 
@@ -165,13 +179,13 @@ function StudentDashboard() {
         </div>
       </div>
 
-      {/* Progress chart */}
+      {/* Progress chart – subject-wise bars per exam */}
       <div className="card" style={{ marginTop: "1.4rem" }}>
         <div className="card-header">
           <div>
             <h3 className="card-title">Progress Across Exams</h3>
             <p className="card-subtitle">
-              Track how your marks changed for each exam.
+              Each color shows your marks in a subject for that exam.
             </p>
           </div>
         </div>
@@ -184,22 +198,21 @@ function StudentDashboard() {
         ) : (
           <div style={{ width: "100%", height: 260 }}>
             <ResponsiveContainer>
-              <LineChart data={lineData}>
+              <BarChart data={examChartData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="exam" />
-                <YAxis />
+                <YAxis domain={[0, 100]} />
                 <Tooltip />
+                {/* 4 colored bars = 4 subjects */}
                 {SUBJECTS.map((sub, index) => (
-                  <Line
+                  <Bar
                     key={sub}
-                    type="monotone"
                     dataKey={sub}
-                    strokeWidth={2}
-                    stroke={`hsl(${(index * 80) % 360}, 80%, 60%)`}
-                    connectNulls
+                    fill={SUBJECT_COLORS[index % SUBJECT_COLORS.length]}
+                    radius={[6, 6, 0, 0]}
                   />
                 ))}
-              </LineChart>
+              </BarChart>
             </ResponsiveContainer>
           </div>
         )}

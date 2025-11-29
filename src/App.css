@@ -462,3 +462,126 @@
   align-items: center;
   gap: 12px;
 }
+.student-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.student-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.student-list-item {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 10px 14px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.student-list-score {
+  font-weight: 600;
+  color: #a5b4fc;
+}
+
+.student-list-score.danger {
+  color: #f87171;
+}
+
+.student-list-title {
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+/* Student report visuals */
+
+.student-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.2rem;
+  margin-top: 0.6rem;
+}
+
+.student-list-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+.notif-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.4rem 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.86rem;
+  line-height: 1.4;
+  padding: 0.4rem 0.5rem;
+  border-radius: 0.5rem;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+}
+
+.notif-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  margin-top: 0.35rem;
+  flex-shrink: 0;
+  background: #e5e7eb;
+}
+
+.notif-warning .notif-dot {
+  background: #f97316;
+}
+
+.notif-subject .notif-dot {
+  background: #facc15;
+}
+
+.notif-success .notif-dot {
+  background: #22c55e;
+}
+
+.notif-info .notif-dot {
+  background: #60a5fa;
+}
+.page-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.pdf-btn {
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: background 0.15s ease, transform 0.1s ease,
+    box-shadow 0.15s ease;
+}
+
+.pdf-btn:hover {
+  background: rgba(79, 70, 229, 0.9);
+  box-shadow: 0 10px 30px rgba(79, 70, 229, 0.4);
+  transform: translateY(-1px);
+}
