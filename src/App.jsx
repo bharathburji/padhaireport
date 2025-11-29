@@ -1,35 +1,40 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route, Navigate } from "react-router-dom";
+
+import Login from "./pages/auth/Login.jsx";
+
+import TeacherLayout from "./components/layout/TeacherLayout.jsx";
+import StudentLayout from "./components/layout/StudentLayout.jsx";
+
+import TeacherDashboard from "./pages/teacher/TeacherDashboard.jsx";
+import ManageStudents from "./pages/teacher/ManageStudents.jsx";
+import ManageMarks from "./pages/teacher/ManageMarks.jsx";
+
+import StudentDashboard from "./pages/student/StudentDashboard.jsx";
+import StudentReports from "./pages/student/StudentReports.jsx";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Routes>
+      {/* Login */}
+      <Route path="/login" element={<Login />} />
+
+      {/* Teacher area (no guards – navigation is direct) */}
+      <Route path="/teacher" element={<TeacherLayout />}>
+        <Route path="dashboard" element={<TeacherDashboard />} />
+        <Route path="students" element={<ManageStudents />} />
+        <Route path="marks" element={<ManageMarks />} />
+      </Route>
+
+      {/* Student area (no guards – navigation is direct) */}
+      <Route path="/student" element={<StudentLayout />}>
+        <Route path="dashboard" element={<StudentDashboard />} />
+        <Route path="reports" element={<StudentReports />} />
+      </Route>
+
+      {/* Fallback – send anything unknown to login */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
